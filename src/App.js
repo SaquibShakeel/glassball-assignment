@@ -18,7 +18,7 @@ function App() {
   const saveHandler = async () => {
     for(let i = 0; i < dataIndex.length; i++){
       const response = await axios.patch(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${dataIndex[i]}.json`,
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${dataIndex[i]-1}.json`,
         {
           Date: Data[dataIndex[i]][0].toString(),
           USD: Data[dataIndex[i]][1].toString(),
@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="App">
       {/* <SpreadsheetExample /> */}
-      <button onClick={saveHandler}>Save</button>
+      <button className='saveDataBtn' onClick={saveHandler}>Save</button>
       <GridSheet Data={Data} setData={setData} setDataIndex={setDataIndex} />
       {/* <SpreadsheetComponent /> */}
       {/* <ReactSheets /> */}

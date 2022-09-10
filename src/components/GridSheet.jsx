@@ -56,12 +56,12 @@ function GridSheet({ Data, setData, setDataIndex }) {
           }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <React.Fragment key={virtualRow.index}>
+            <div key={virtualRow.index} className='listTable'>
               {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
                 return (
                   <div
                     key={virtualColumn.index}
-                    className={
+                    className={ 
                       virtualColumn.index % 2
                         ? virtualRow.index % 2 === 0
                           ? 'ListItemOdd'
@@ -76,11 +76,11 @@ function GridSheet({ Data, setData, setDataIndex }) {
                       top: 0,
                       left: 0,
                       width: `200px`,
-                      height: `100px`,
+                      height: `50px`,
                       transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
                     }}
                   >
-                    <EditText style={{width: '94%', height: '34%'}}
+                    <EditText style={{width: '100%', height: '100%'}} className="EditTextStyle"
                       value={Data[virtualRow.index][virtualColumn.index]}
                       onChange={HandleEditData(
                         virtualRow.index,
@@ -90,7 +90,7 @@ function GridSheet({ Data, setData, setDataIndex }) {
                   </div>
                 );
               })}
-            </React.Fragment>
+            </div>
           ))}
         </div>
       </div>
