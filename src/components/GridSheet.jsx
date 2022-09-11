@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { EditText } from 'react-edit-text';
-import 'react-edit-text/dist/index.css';
+import * as React from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { EditText } from "react-edit-text";
+import "react-edit-text/dist/index.css";
 
 function GridSheet({ Data, setData, setDataIndex }) {
   const parentRef = React.useRef();
@@ -26,9 +26,10 @@ function GridSheet({ Data, setData, setDataIndex }) {
     (i, j) => (e) => {
       setData((prev) => {
         prev[i][j] = e.target.value;
-        if(!temp.includes(prev.indexOf(prev[i]))){
+        if (!temp.includes(prev.indexOf(prev[i]))) {
           temp.push(prev.indexOf(prev[i]));
         }
+        console.log(temp);
         setDataIndex(temp);
 
         return [...prev];
@@ -45,34 +46,34 @@ function GridSheet({ Data, setData, setDataIndex }) {
         style={{
           height: `${rowVirtualizer.totalSize}px`,
           width: `${columnVirtualizer.totalSize}px`,
-          overflow: 'auto',
+          overflow: "auto",
         }}
       >
         <div
           style={{
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: `${columnVirtualizer.getTotalSize()}px`,
-            position: 'relative',
+            position: "relative",
           }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <div key={virtualRow.index} className='listTable'>
+            <div key={virtualRow.index} className="listTable">
               {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
                 return (
                   <div
                     key={virtualColumn.index}
-                    className={ 
+                    className={
                       virtualColumn.index % 2
                         ? virtualRow.index % 2 === 0
-                          ? 'ListItemOdd'
-                          : 'ListItemEven'
+                          ? "ListItemOdd"
+                          : "ListItemEven"
                         : virtualRow.index % 2
-                        ? 'ListItemOdd'
-                        : 'ListItemEven'
+                        ? "ListItemOdd"
+                        : "ListItemEven"
                     }
                     style={{
-                      position: 'absolute',
-                      border: '1px solid black',
+                      position: "absolute",
+                      border: "1px solid black",
                       top: 0,
                       left: 0,
                       width: `200px`,
@@ -80,7 +81,9 @@ function GridSheet({ Data, setData, setDataIndex }) {
                       transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
                     }}
                   >
-                    <EditText style={{width: '100%', height: '100%'}} className="EditTextStyle"
+                    <EditText
+                      style={{ width: "100%", height: "100%" }}
+                      className="EditTextStyle"
                       value={Data[virtualRow.index][virtualColumn.index]}
                       onChange={HandleEditData(
                         virtualRow.index,

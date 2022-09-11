@@ -1,61 +1,79 @@
-import './App.css';
-import React from 'react';
-import ReactSheets from './components/ReactSheets';
-import SpreadsheetExample from './components/SpreadsheetExample';
-import { SpreadsheetComponent } from "@syncfusion/ej2-react-spreadsheet";
-import GridSheet from './components/GridSheet';
-import axios from 'axios';
-
+import "./App.css";
+import React from "react";
+import GridSheet from "./components/GridSheet";
+import axios from "axios";
+import AddColumn from "./components/AddColumn";
 
 function App() {
-
-
+  const [resData, setResData] = React.useState([]);
   const [Data, setData] = React.useState([[]]);
 
   const [dataIndex, setDataIndex] = React.useState([]);
-  // const temp = [];
+  const [openAddCol, setOpenAddCol] = React.useState(false);
 
   const saveHandler = async () => {
-    for(let i = 0; i < dataIndex.length; i++){
-      const response = await axios.patch(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${dataIndex[i]-1}.json`,
-        {
-          Date: Data[dataIndex[i]][0].toString(),
-          USD: Data[dataIndex[i]][1].toString(),
-        }
+    let header = Object.keys(resData[0]);
+    console.log(header);
+    for (let i = 0; i < dataIndex.length; i++) {
+      const obj = {};
+      for (let j = 0; j < header.length; j++) {
+        obj[header[j]] = Data[dataIndex[i]][j].toString();
+      }
+      console.log(obj);
+      await axios.patch(
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${
+          dataIndex[i] - 1
+        }.json`,
+        obj
       );
     }
     setDataIndex([]);
-  }
+  };
+
+  const addColumnHandler = () => {
+    setOpenAddCol(true);
+  };
 
   React.useEffect(() => {
-    axios.get(`https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`).then(res => {
+    axios
+      .get(
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`
+      )
+      .then((res) => {
+        setResData(res.data);
+        const _data = [];
+        _data.push(Object.keys(res.data[0]));
 
-      const _data = [];
-      _data.push(Object.keys(res.data[0]));
+        res.data.forEach((innerArr) => {
+          const tahir = [];
+          for (const key in innerArr) {
+            tahir.push(`${innerArr[key]}`);
+          }
+          _data.push(tahir);
+        });
 
-      res.data.forEach(innerArr => {
-        const tahir = [];
-        for(const key in innerArr){
-          tahir.push(`${innerArr[key]}`)
-        }
-        _data.push(tahir);
+        setData(_data);
       });
-      
-      setData(_data);
-    });
   }, []);
-
-  
-  
 
   return (
     <div className="App">
-      {/* <SpreadsheetExample /> */}
-      <button className='saveDataBtn' onClick={saveHandler}>Save</button>
+      {openAddCol && (
+        <AddColumn
+          setResData={setResData}
+          resData={resData}
+          setOpenAddCol={setOpenAddCol}
+        />
+      )}
+      <div className="btn-container">
+        <button className="saveDataBtn" onClick={addColumnHandler}>
+          Add Column
+        </button>
+        <button className="saveDataBtn" onClick={saveHandler}>
+          Save
+        </button>
+      </div>
       <GridSheet Data={Data} setData={setData} setDataIndex={setDataIndex} />
-      {/* <SpreadsheetComponent /> */}
-      {/* <ReactSheets /> */}
     </div>
   );
 }
