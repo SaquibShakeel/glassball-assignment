@@ -7,18 +7,54 @@ const AddColumn = ({ setResData, resData, setOpenAddCol }) => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    setResData((prev) => {
-      prev.forEach((row) => {
-        row[colName] = "";
+    if (colType === "text") {
+      setResData((prev) => {
+        prev.forEach((row) => {
+          row[colName] = "";
+        });
+        return [...prev];
       });
-      return [...prev];
-    });
 
-    await axios.put(
-      `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
-      resData
-    );
+      await axios.put(
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
+        resData
+      );
+    } else if (colType === "singleselect") {
+      setResData((prev) => {
+        prev.forEach((row) => {
+          row[colName] = {
+            type: "singleselect",
+            value: {
+              value: "",
+              label: "",
+            },
+          };
+        });
+        return [...prev];
+      });
+
+      await axios.put(
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
+        resData
+      );
+    } else if (colType === "multiselect") {
+      setResData((prev) => {
+        prev.forEach((row) => {
+          row[colName] = {
+            type: "multiselect",
+            value: [],
+          };
+        });
+        return [...prev];
+      });
+
+      await axios.put(
+        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
+        resData
+      );
+    }
     setOpenAddCol(false);
+    window.location.reload();
   };
 
   return (
