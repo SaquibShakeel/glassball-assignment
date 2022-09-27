@@ -8,7 +8,7 @@ import Backdrop from "./components/Backdrop";
 
 function App() {
   const [resData, setResData] = React.useState([]);
-  const [Data, setData] = React.useState([[]]);
+  const [sheetData, setSheetData] = React.useState([[]]);
 
   const [dataIndex, setDataIndex] = React.useState([]);
   const [openAddCol, setOpenAddCol] = React.useState(false);
@@ -19,11 +19,8 @@ function App() {
     let header = Object.keys(resData[0]);
     // console.log(header);
     for (let i = 0; i < dataIndex.length; i++) {
-      const obj = {};
-      for (let j = 0; j < header.length; j++) {
-        obj[header[j]] = Data[dataIndex[i]][j].toString();
-      }
-      // console.log(obj);
+      const obj = resData[dataIndex[i] - 1];
+      console.log(obj);
       await axios.patch(
         `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${
           dataIndex[i] - 1
@@ -39,6 +36,7 @@ function App() {
     setIsLoading(false);
     alert("Data Saved");
   };
+  // console.log(dataIndex);
 
   const addColumnHandler = () => {
     setOpenAddCol(true);
@@ -67,7 +65,7 @@ function App() {
           _data.push(tahir);
         });
 
-        setData(_data);
+        setSheetData(_data);
       });
     setIsLoading(false);
   }, []);
@@ -114,8 +112,8 @@ function App() {
         </button>
       </div>
       <GridSheet
-        Data={Data}
-        setData={setData}
+        Data={sheetData}
+        setData={setSheetData}
         resData={resData}
         setDataIndex={setDataIndex}
         setResData={setResData}

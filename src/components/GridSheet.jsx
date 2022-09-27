@@ -36,8 +36,12 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
 
         return [...prev];
       });
+      setResData((prev) => {
+        prev[i - 1][Object.keys(prev[i - 1])[j]] = e.target.value;
+        return [...prev];
+      });
     },
-    [setData]
+    [setData, setResData]
   );
   // console.log(selectedSingle);
 
@@ -132,6 +136,17 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
                             ].value = e;
                             return [...prev];
                           });
+                          if (
+                            !temp.includes(
+                              resData.indexOf(resData[virtualRow.index])
+                            )
+                          ) {
+                            temp.push(
+                              resData.indexOf(resData[virtualRow.index])
+                            );
+                          }
+                          // console.log(temp);
+                          setDataIndex(temp);
                         }}
                       />
                     ) : virtualRow.index !== 0 &&
@@ -170,6 +185,17 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
                             ].value = e;
                             return [...prev];
                           });
+                          if (
+                            !temp.includes(
+                              resData.indexOf(resData[virtualRow.index])
+                            )
+                          ) {
+                            temp.push(
+                              resData.indexOf(resData[virtualRow.index])
+                            );
+                          }
+                          // console.log(temp);
+                          setDataIndex(temp);
                         }}
                       />
                     ) : (
