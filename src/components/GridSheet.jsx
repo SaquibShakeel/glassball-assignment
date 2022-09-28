@@ -3,11 +3,18 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import Select from "react-select";
-import { type } from "@testing-library/user-event/dist/type";
+// import { type } from "@testing-library/user-event/dist/type";
 
-function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
+function GridSheet({
+  Data,
+  setData,
+  setDataIndex,
+  resData,
+  setResData,
+  dataIndex,
+}) {
   const parentRef = React.useRef();
-  const temp = [];
+  // let temp = [];
 
   const rowVirtualizer = useVirtualizer({
     count: Data.length,
@@ -24,25 +31,26 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
     overscan: 5,
   });
 
-  const HandleEditData = React.useCallback(
-    (i, j) => (e) => {
-      setData((prev) => {
-        prev[i][j] = e.target.value;
-        if (!temp.includes(prev.indexOf(prev[i]))) {
-          temp.push(prev.indexOf(prev[i]));
-        }
-        // console.log(temp);
-        setDataIndex(temp);
+  // const HandleEditData = React.useCallback(
+  //   (e, i, j) => () => {
+  //     setData((prev) => {
+  //       prev[i][j] = e.target.value;
+  //       // console.log(temp);
+  //       // setDataIndex(temp);
 
-        return [...prev];
-      });
-      setResData((prev) => {
-        prev[i - 1][Object.keys(prev[i - 1])[j]] = e.target.value;
-        return [...prev];
-      });
-    },
-    [setData, setResData]
-  );
+  //       return [...prev];
+  //     });
+  //     // if (!dataIndex.includes(Data.indexOf(Data[i]))) {
+  //     //   setDataIndex((prevIndex) => [...prevIndex, Data.indexOf(Data[i])]);
+  //     //   // temp.push(prev.indexOf(prev[i]));
+  //     // }
+  //     setResData((prev) => {
+  //       prev[i - 1][Object.keys(prev[i - 1])[j]] = e.target.value;
+  //       return [...prev];
+  //     });
+  //   },
+  //   [setData, setResData]
+  // );
   // console.log(selectedSingle);
 
   return (
@@ -137,16 +145,15 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
                             return [...prev];
                           });
                           if (
-                            !temp.includes(
-                              resData.indexOf(resData[virtualRow.index])
+                            !dataIndex.includes(
+                              Data.indexOf(Data[virtualRow.index])
                             )
                           ) {
-                            temp.push(
-                              resData.indexOf(resData[virtualRow.index])
-                            );
+                            setDataIndex((prev) => [
+                              ...prev,
+                              Data.indexOf(Data[virtualRow.index]),
+                            ]);
                           }
-                          // console.log(temp);
-                          setDataIndex(temp);
                         }}
                       />
                     ) : virtualRow.index !== 0 &&
@@ -186,16 +193,15 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
                             return [...prev];
                           });
                           if (
-                            !temp.includes(
-                              resData.indexOf(resData[virtualRow.index])
+                            !dataIndex.includes(
+                              Data.indexOf(Data[virtualRow.index])
                             )
                           ) {
-                            temp.push(
-                              resData.indexOf(resData[virtualRow.index])
-                            );
+                            setDataIndex((prev) => [
+                              ...prev,
+                              Data.indexOf(Data[virtualRow.index]),
+                            ]);
                           }
-                          // console.log(temp);
-                          setDataIndex(temp);
                         }}
                       />
                     ) : (
@@ -203,10 +209,31 @@ function GridSheet({ Data, setData, setDataIndex, resData, setResData }) {
                         style={{ width: "100%", height: "100%" }}
                         className="EditTextStyle"
                         value={Data[virtualRow.index][virtualColumn.index]}
-                        onChange={HandleEditData(
-                          virtualRow.index,
-                          virtualColumn.index
-                        )}
+                        onChange={(e) => {
+                          setData((prev) => {
+                            prev[virtualRow.index][virtualColumn.index] =
+                              e.target.value;
+                            return [...prev];
+                          });
+                          if (
+                            !dataIndex.includes(
+                              Data.indexOf(Data[virtualRow.index])
+                            )
+                          ) {
+                            setDataIndex((prev) => [
+                              ...prev,
+                              Data.indexOf(Data[virtualRow.index]),
+                            ]);
+                          }
+                          setResData((prev) => {
+                            prev[virtualRow.index - 1][
+                              Object.keys(prev[virtualRow.index - 1])[
+                                virtualColumn.index
+                              ]
+                            ] = e.target.value;
+                            return [...prev];
+                          });
+                        }}
                       />
                     )}
                   </div>

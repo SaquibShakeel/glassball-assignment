@@ -16,8 +16,6 @@ function App() {
 
   const saveHandler = async () => {
     setIsLoading(true);
-    let header = Object.keys(resData[0]);
-    // console.log(header);
     for (let i = 0; i < dataIndex.length; i++) {
       const obj = resData[dataIndex[i] - 1];
       console.log(obj);
@@ -28,10 +26,6 @@ function App() {
         obj
       );
     }
-    await axios.put(
-      `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
-      resData
-    );
     setDataIndex([]);
     setIsLoading(false);
     alert("Data Saved");
@@ -117,6 +111,7 @@ function App() {
         resData={resData}
         setDataIndex={setDataIndex}
         setResData={setResData}
+        dataIndex={dataIndex}
       />
     </div>
   );
