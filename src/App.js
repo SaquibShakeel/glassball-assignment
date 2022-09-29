@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import GridSheet from "./components/GridSheet";
 import axios from "axios";
@@ -14,6 +14,7 @@ import { signOut } from "firebase/auth";
 function App() {
   const [resData, setResData] = React.useState([]);
   const [sheetData, setSheetData] = React.useState([[]]);
+  const [sheetColumns, setSheetColumns] = useState([]);
 
   const [dataIndex, setDataIndex] = React.useState([]);
   const [openAddCol, setOpenAddCol] = React.useState(false);
@@ -52,29 +53,6 @@ function App() {
 
   React.useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`
-      )
-      .then((res) => {
-        setResData(res.data);
-        const _data = [];
-        _data.push(Object.keys(res.data[0]));
-
-        res.data.forEach((innerArr) => {
-          const dataRows = [];
-          for (const key in innerArr) {
-            if (typeof innerArr[key] === "object") {
-              dataRows.push(innerArr[key].type);
-            } else {
-              dataRows.push(`${innerArr[key]}`);
-            }
-          }
-          _data.push(dataRows);
-        });
-
-        setSheetData(_data);
-      });
     setIsLoading(false);
   }, []);
 
@@ -130,14 +108,14 @@ function App() {
           Logout {`(${Email})`}
         </button>
       </div>
-      <GridSheet
+      {/* <GridSheet
         Data={sheetData}
         setData={setSheetData}
         resData={resData}
         setDataIndex={setDataIndex}
         setResData={setResData}
         dataIndex={dataIndex}
-      />
+      /> */}
     </div>
   );
 }

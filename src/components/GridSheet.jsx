@@ -1,8 +1,9 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import Select from "react-select";
+import useDebouncedCallback from "../hooks/useDebounceCallback";
 // import { type } from "@testing-library/user-event/dist/type";
 
 function GridSheet({
@@ -13,11 +14,15 @@ function GridSheet({
   setResData,
   dataIndex,
 }) {
+  const [tableData, setTableData] = useState(Data);
+
+  useEffect(() => {}, [tableData]);
+
   const parentRef = React.useRef();
   // let temp = [];
 
   const rowVirtualizer = useVirtualizer({
-    count: Data.length,
+    count: tableData.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50,
     overscan: 5,
@@ -25,11 +30,14 @@ function GridSheet({
 
   const columnVirtualizer = useVirtualizer({
     horizontal: true,
-    count: Data[0].length,
+    count: tableData[0].length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 200,
     overscan: 5,
   });
+
+  const updateData = useDebouncedCallback(({ value, vindex, cindex }) => {},
+  500);
 
   // const HandleEditData = React.useCallback(
   //   (e, i, j) => () => {
@@ -208,24 +216,27 @@ function GridSheet({
                       <EditText
                         style={{ width: "100%", height: "100%" }}
                         className="EditTextStyle"
-                        value={Data[virtualRow.index][virtualColumn.index]}
+                        value={tableData[virtualRow.index][virtualColumn.index]}
                         onChange={(e) => {
-                          setData((prev) => {
-                            prev[virtualRow.index][virtualColumn.index] =
-                              e.target.value;
-                            return [...prev];
-                          });
-                          if (
-                            !dataIndex.includes(
-                              Data.indexOf(Data[virtualRow.index])
-                            )
-                          ) {
-                            setDataIndex((prev) => [
-                              ...prev,
-                              Data.indexOf(Data[virtualRow.index]),
-                            ]);
-                          }
-                          setResData((prev) => {
+                          //   setTableData((prev) => {
+                          //     prev[virtualRow.index][virtualColumn.index] =
+                          //       e.target.value;
+                          //     return [...prev];
+                          //   });
+                          //   if (
+                          //     !dataIndex.includes(
+                          //       Data.indexOf(Data[virtualRow.index])
+                          //     )
+                          //   ) {
+                          //     setDataIndex((prev) => [
+                          //       ...prev,
+                          //       Data.indexOf(Data[virtualRow.index]),
+                          //     ]);
+                          //   }
+                          setTableData((prev) => {
+                            if (!prev[virtualRow - 1]) return prev;
+
+                            console.log("");
                             prev[virtualRow.index - 1][
                               Object.keys(prev[virtualRow.index - 1])[
                                 virtualColumn.index
