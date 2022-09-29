@@ -10,36 +10,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { auth } from "./firebase-config";
 import { logout } from "./components/store/AuthSlice";
 import { signOut } from "firebase/auth";
+import useGridSheet from "./hooks/useGridSheet";
 
 function App() {
   const [resData, setResData] = React.useState([]);
-  const [sheetData, setSheetData] = React.useState([[]]);
-  const [sheetColumns, setSheetColumns] = useState([]);
-
-  const [dataIndex, setDataIndex] = React.useState([]);
+  const [GridSheetData, GridSheetHandler] = useGridSheet();
   const [openAddCol, setOpenAddCol] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const Email = useSelector((state) => state.auth.user.email);
   const dispatch = useDispatch();
-
-  const saveHandler = async () => {
-    setIsLoading(true);
-    for (let i = 0; i < dataIndex.length; i++) {
-      const obj = resData[dataIndex[i] - 1];
-      console.log(obj);
-      await axios.patch(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets/${
-          dataIndex[i] - 1
-        }.json`,
-        obj
-      );
-    }
-    setDataIndex([]);
-    setIsLoading(false);
-    alert("Data Saved");
-  };
-  // console.log(dataIndex);
 
   const addColumnHandler = () => {
     setOpenAddCol(true);
@@ -53,8 +33,13 @@ function App() {
 
   React.useEffect(() => {
     setIsLoading(true);
-    setIsLoading(false);
-  }, []);
+    GridSheetHandler.fetchColumns().then(() => {
+      setIsLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [GridSheetHandler.fetchColumns]);
+
+  console.log(GridSheetData);
 
   if (!Email) {
     return (
@@ -82,18 +67,16 @@ function App() {
             fontWeight: "600",
             textAlign: "center",
             zIndex: "99999",
-          }}
-        >
+          }}>
           Loading...
         </h1>
       )}
       {openAddCol &&
         ReactDOM.createPortal(
           <AddColumn
-            setResData={setResData}
-            resData={resData}
             setOpenAddCol={setOpenAddCol}
             setIsLoading={setIsLoading}
+            onSubmit={GridSheetHandler.addColumn}
           />,
           document.getElementById("modal-root")
         )}
@@ -101,21 +84,19 @@ function App() {
         <button className="saveDataBtn" onClick={addColumnHandler}>
           Add Column
         </button>
-        <button className="saveDataBtn" onClick={saveHandler}>
+        <button className="saveDataBtn" onClick={GridSheetHandler.saveHandler}>
           Save
         </button>
         <button className="saveDataBtn" onClick={handleLogout}>
           Logout {`(${Email})`}
         </button>
       </div>
-      {/* <GridSheet
-        Data={sheetData}
-        setData={setSheetData}
-        resData={resData}
-        setDataIndex={setDataIndex}
-        setResData={setResData}
-        dataIndex={dataIndex}
-      /> */}
+      <GridSheet
+        Columns={GridSheetData.sheetColumns}
+        Data={GridSheetData.sheetData}
+        updateColumns={() => {}}
+        updateData={GridSheetHandler.updateData}
+      />
     </div>
   );
 }

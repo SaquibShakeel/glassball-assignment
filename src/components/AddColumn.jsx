@@ -1,62 +1,13 @@
-import axios from "axios";
 import React from "react";
 
-const AddColumn = ({ setResData, resData, setOpenAddCol }) => {
+const AddColumn = ({ setOpenAddCol, onSubmit }) => {
   const [colName, setColName] = React.useState("");
   const [colType, setColType] = React.useState("text");
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    if (colType === "text") {
-      setResData((prev) => {
-        prev.forEach((row) => {
-          row[colName] = "";
-        });
-        return [...prev];
-      });
-
-      await axios.put(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
-        resData
-      );
-    } else if (colType === "singleselect") {
-      setResData((prev) => {
-        prev.forEach((row) => {
-          row[colName] = {
-            type: "singleselect",
-            value: {
-              value: "",
-              label: "",
-            },
-          };
-        });
-        return [...prev];
-      });
-
-      await axios.put(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
-        resData
-      );
-    } else if (colType === "multiselect") {
-      setResData((prev) => {
-        prev.forEach((row) => {
-          row[colName] = {
-            type: "multiselect",
-            value: [],
-          };
-        });
-        return [...prev];
-      });
-
-      await axios.put(
-        `https://glassball-assignment-default-rtdb.firebaseio.com/sheets.json`,
-        resData
-      );
-    }
-    setOpenAddCol(false);
-    window.location.reload();
+    onSubmit(colType, colName);
   };
-
   return (
     <div className="addColumn">
       <form onSubmit={onSubmitHandler}>
@@ -74,8 +25,7 @@ const AddColumn = ({ setResData, resData, setOpenAddCol }) => {
           name="type"
           id="type"
           value={colType}
-          onChange={(e) => setColType(e.target.value)}
-        >
+          onChange={(e) => setColType(e.target.value)}>
           <option value="text">Text</option>
           <option value="singleselect">Single Select</option>
           <option value="multiselect">Multi Select</option>
