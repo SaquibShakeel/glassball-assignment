@@ -5,6 +5,11 @@ import GridSheet from "./components/GridSheet";
 import axios from "axios";
 import AddColumn from "./components/AddColumn";
 import Backdrop from "./components/Backdrop";
+import HomePage from "./components/HomePage";
+import { useSelector, useDispatch } from "react-redux";
+import { auth } from "./firebase-config";
+import { logout } from "./components/store/AuthSlice";
+import { signOut } from "firebase/auth";
 
 function App() {
   const [resData, setResData] = React.useState([]);
@@ -13,6 +18,9 @@ function App() {
   const [dataIndex, setDataIndex] = React.useState([]);
   const [openAddCol, setOpenAddCol] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const Email = useSelector((state) => state.auth.user.email);
+  const dispatch = useDispatch();
 
   const saveHandler = async () => {
     setIsLoading(true);
@@ -36,6 +44,12 @@ function App() {
     setOpenAddCol(true);
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    dispatch(logout());
+    console.log("User logged out");
+  };
+
   React.useEffect(() => {
     setIsLoading(true);
     axios
@@ -48,21 +62,29 @@ function App() {
         _data.push(Object.keys(res.data[0]));
 
         res.data.forEach((innerArr) => {
-          const tahir = [];
+          const dataRows = [];
           for (const key in innerArr) {
             if (typeof innerArr[key] === "object") {
-              tahir.push(innerArr[key].type);
+              dataRows.push(innerArr[key].type);
             } else {
-              tahir.push(`${innerArr[key]}`);
+              dataRows.push(`${innerArr[key]}`);
             }
           }
-          _data.push(tahir);
+          _data.push(dataRows);
         });
 
         setSheetData(_data);
       });
     setIsLoading(false);
   }, []);
+
+  if (!Email) {
+    return (
+      <div className="App">
+        <HomePage />
+      </div>
+    );
+  }
 
   return (
     <div className="App">
@@ -103,6 +125,9 @@ function App() {
         </button>
         <button className="saveDataBtn" onClick={saveHandler}>
           Save
+        </button>
+        <button className="saveDataBtn" onClick={handleLogout}>
+          Logout {`(${Email})`}
         </button>
       </div>
       <GridSheet
